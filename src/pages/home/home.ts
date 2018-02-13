@@ -7,40 +7,37 @@ import { Geolocation } from '@ionic-native/geolocation';
   templateUrl: 'home.html'
 })
 export class HomePage {
-  public latitud;
-  public longitud;
+  public latitud: any;
+  public longitud: any;
 
   constructor(public navCtrl: NavController, public geolocation: Geolocation, public platform: Platform) {     
-     let watch = this.geolocation.watchPosition();
-     watch.subscribe((data) => {
-      // data can be a set of coordinates, or an error (if an error occurred).
-      // data.coords.latitude
-      // data.coords.longitude
-        console.log(data);
-        console.log(data);
-     });
-     console.log("XXXXXXXX");
+
   }
 
   ionViewDidLoad(){
+    console.log("1 ++++++++++++++++++++++++++");
+    this.platform.ready().then(() => {    
+      this.geolocation.getCurrentPosition({ timeout: 10000, enableHighAccuracy: true, maximumAge: 3000 }).then(pos => {
+        console.log(`lat: ${pos.coords.latitude}, lon: ${pos.coords.longitude}`);
+        this.latitud = pos.coords.latitude;
+        this.longitud = pos.coords.longitude;
+      }).catch( error => {
+          console.log(error)
+        }
+      );
+      // watch position
+      const watch = this.geolocation.watchPosition().subscribe(pos => {
+        console.log(`lat: ${pos.coords.latitude}, lon: ${pos.coords.longitude}`)
+        //this.position = pos;
+      });
+      // to stop watching
+      watch.unsubscribe();
+    });
+    console.log("2 ++++++++++++++++++++++++++");
   }
 
   getLatitudeLongitude() {
-    console.log("1 ++++++++++++++++++++++++++");
-    this.platform.ready().then(() => {
-      console.log("1.5 ++++++++++++++++++++++++++");
-      this.geolocation.getCurrentPosition({ timeout: 3000, enableHighAccuracy: true, maximumAge: 3000 }).then((resp) => {
-        console.log(resp.coords.latitude);
-        console.log(resp.coords.longitude);
-        this.latitud = resp.coords.latitude;
-        this.longitud = resp.coords.longitude;
-        return;
-      }).catch((error) => {
-        console.log(error);
-        console.log('Error getting location', error);
-      });
-    });
-    
-    console.log("2 ++++++++++++++++++++++++++");
+    console.log("1A ++++++++++++++++++++++++++");
+    console.log("2A ++++++++++++++++++++++++++");
   }
 }
